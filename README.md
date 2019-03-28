@@ -8,9 +8,15 @@ use a raspberry pi, you will have the option of a CLI.
 In either case, you will need:
 
 -- Two drinks.
+
 -- Two pumps.
+
 -- MOSFETs to drive the pumps.
+
 -- An LCD.
+
 -- A potentiometer.
+
 -- A button.
+
 -- Tubing. 
