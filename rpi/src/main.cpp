@@ -1,5 +1,9 @@
+// Copyright 2019 Charlie Wilkin
+
+#include "../include/screen.hpp"
 #include <wiringPi.h>
 #include <lcd.h>
+#include <iostream>
 
 //USE WIRINGPI PIN NUMBERS
 #define LCD_RS  25               //Register select pin
@@ -12,12 +16,15 @@
 #define LCD_D5  22               //Data pin D5
 #define LCD_D6  21               //Data pin D6
 #define LCD_D7  14               //Data pin D7
- 
-int main() {
-  int lcd;
-  wiringPiSetup();
-  lcd = lcdInit (2, 16, 8, LCD_RS, LCD_E, LCD_D0, LCD_D1, LCD_D2, LCD_D3,
-		 LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-  lcdPuts(lcd, "Hello, world!");
+int main() {
+  Screen LCD;
+  int dialed_ABV = 0;
+  while (true) {
+    dialed_ABV = POT.get_dialed();
+    LCD.print(dialed_ABV);
+    if (get_button()) {
+      motors.Pour(dialed_ABV);
+    }
+  }
 }
