@@ -1,30 +1,43 @@
 #include <iostream>
 #include <wiringPi.h>
+#include <chrono>
+#include <thread>
 
 float ABV_to_sec(float ABV) {
   // Assume 40% ABV spirit, and an 8oz (227 mL) drink.
-  vol = (ABV / 40) * 227;
-  float sec = std::max(vol * 0.0344 + 0.309);  // Experimentally determined from flow 
+  float vol = (ABV / 40) * 227;
+  float sec = vol * 0.0344 + 0.309;  // Experimentally determined from flow 
                                     // rate.
   return sec;
 }
 
 
 void pour(int ABV) {
-  int spirit_pin = 21;  // GPIO 09
-  int mixer_pin = 23;  // GPIO 11
+  int spirit_pin = 21;  // GPIO 21
+  int mixer_pin = 23;  // GPIO 23
   float total_pour_time = 8.11;  // Seconds.
   wiringPiSetup();
-  pinMode(spirit_pin, PWM_OUTPUT);
-  pinMode(mixer_pin, PWM_OUTPUT);
+  pinMode(spirit_pin, OUTPUT);
+  pinMode(mixer_pin, OUTPUT);
 
   std::cout << "Pouring a " << ABV << "\% ABV drink...\n";
-  float spirit_sec = ABV_to_sec(ABV);
+  float spirit_msec = 1000 * ABV_to_sec(ABV);
 
   // Mixer pouring time is the remainder, plus the time it takes for the motor
   // to start:
-  float mixer_sec = total_pour_time - spirit_sec + 0.309;
+  float mixer_msec = 1000 * total_pour_time - spirit_msec + 0.309;
 
+  unsigned int ispirit_msec = (int) spirit_msec;
+  unsigned int imixer_msec = (int) mixer_msec;
+
+  
+  digitalWrite(spirit_pin, HIGH);
+  std::this_thread::sleep_for(std::chrono::milliseconds(ispirit_msec));
+  digitalWrite(spirit_pin, LOW);
+
+  digitalWrite(mixer_pin, HIGH);
+  std::this_thread::sleep_for(std::chrono::milliseconds(imixer_msec));
+  digitalWrite(mixer_pin, LOW);
   
 };
 
